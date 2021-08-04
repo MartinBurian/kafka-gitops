@@ -4,6 +4,7 @@ import com.devshawn.kafka.gitops.domain.state.DesiredStateFile;
 import com.devshawn.kafka.gitops.domain.state.settings.SettingsFiles;
 import com.devshawn.kafka.gitops.exception.ValidationException;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +37,14 @@ public class ParserService {
         objectMapper.enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
         objectMapper.registerModule(new Jdk8Module());
         this.file = file;
+    }
+
+    public String serializeState(DesiredStateFile stateFile) {
+        try {
+            return objectMapper.writeValueAsString(stateFile);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize state");
+        }
     }
 
     public DesiredStateFile parseStateFile() {

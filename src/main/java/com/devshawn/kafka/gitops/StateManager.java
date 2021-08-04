@@ -19,6 +19,7 @@ import com.devshawn.kafka.gitops.exception.MissingConfigurationException;
 import com.devshawn.kafka.gitops.exception.ServiceAccountNotFoundException;
 import com.devshawn.kafka.gitops.exception.ValidationException;
 import com.devshawn.kafka.gitops.manager.ApplyManager;
+import com.devshawn.kafka.gitops.manager.ImportManager;
 import com.devshawn.kafka.gitops.manager.PlanManager;
 import com.devshawn.kafka.gitops.service.ConfluentCloudService;
 import com.devshawn.kafka.gitops.service.KafkaService;
@@ -53,6 +54,7 @@ public class StateManager {
 
     private PlanManager planManager;
     private ApplyManager applyManager;
+    private ImportManager importManager;
 
     private boolean describeAclEnabled = false;
 
@@ -66,6 +68,7 @@ public class StateManager {
         this.confluentCloudService = new ConfluentCloudService(objectMapper);
         this.planManager = new PlanManager(managerConfig, kafkaService, objectMapper);
         this.applyManager = new ApplyManager(managerConfig, kafkaService);
+        this.importManager = new ImportManager(kafkaService);
     }
 
     public DesiredStateFile getAndValidateStateFile() {
@@ -74,6 +77,11 @@ public class StateManager {
         validateCustomAcls(desiredStateFile);
         this.describeAclEnabled = StateUtil.isDescribeTopicAclEnabled(desiredStateFile);
         return desiredStateFile;
+    }
+
+    public DesiredStateFile importState() {
+        DesiredStateFile importedState = importManager.importState();
+        return importedState;
     }
 
     public DesiredPlan plan() {

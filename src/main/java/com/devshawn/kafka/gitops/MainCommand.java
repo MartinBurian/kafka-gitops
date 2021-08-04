@@ -1,9 +1,6 @@
 package com.devshawn.kafka.gitops;
 
-import com.devshawn.kafka.gitops.cli.AccountCommand;
-import com.devshawn.kafka.gitops.cli.ApplyCommand;
-import com.devshawn.kafka.gitops.cli.PlanCommand;
-import com.devshawn.kafka.gitops.cli.ValidateCommand;
+import com.devshawn.kafka.gitops.cli.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -18,7 +15,8 @@ import java.util.concurrent.Callable;
                 AccountCommand.class,
                 ApplyCommand.class,
                 PlanCommand.class,
-                ValidateCommand.class
+                ValidateCommand.class,
+                ImportCommand.class
         },
         description = "Manage Kafka resources with a desired state file.")
 public class MainCommand implements Callable<Integer> {

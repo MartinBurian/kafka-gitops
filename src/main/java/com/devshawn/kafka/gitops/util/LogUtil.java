@@ -7,12 +7,30 @@ import com.devshawn.kafka.gitops.domain.plan.TopicConfigPlan;
 import com.devshawn.kafka.gitops.domain.plan.TopicDetailsPlan;
 import com.devshawn.kafka.gitops.domain.plan.TopicPlan;
 import com.devshawn.kafka.gitops.domain.state.AclDetails;
+import com.devshawn.kafka.gitops.domain.state.DesiredStateFile;
 import com.devshawn.kafka.gitops.enums.PlanAction;
 import com.devshawn.kafka.gitops.exception.KafkaExecutionException;
 import com.devshawn.kafka.gitops.exception.WritePlanOutputException;
 import picocli.CommandLine;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 public class LogUtil {
+
+    public static void printImport(DesiredStateFile importedState) {
+        System.out.printf("Imported %d topics%n", importedState.getTopics().size());
+
+        if (importedState.getTopics().isEmpty()) return;
+
+        int topicsWidth = importedState.getTopics().keySet().stream().map(String::length).max(Comparator.naturalOrder()).orElse(10);
+
+        System.out.println(String.format("  %-"+topicsWidth+"s %7s %6s","name", "parts", "repl"));
+        System.out.println(String.join("", Collections.nCopies(2+topicsWidth+1+7+1+6+1, "-")));
+        importedState.getTopics().forEach((name, details) -> {
+            System.out.println(String.format("  %-"+topicsWidth+"s %7d %6d", name, details.getPartitions(), details.getReplication().orElse(1)));
+        });
+    }
 
     public static void printPlan(DesiredPlan desiredPlan, boolean deleteDisabled, boolean skipAclsDisabled) {
         PlanOverview planOverview = PlanUtil.getOverview(desiredPlan, deleteDisabled, skipAclsDisabled);
