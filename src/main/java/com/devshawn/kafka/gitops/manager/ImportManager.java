@@ -7,7 +7,6 @@ import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.config.ConfigResource;
-import org.inferred.freebuilder.shaded.com.google.common.collect.Sets;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,9 +14,9 @@ import java.util.stream.Collectors;
 public class ImportManager {
     private final KafkaService kafkaService;
 
-    public static Set<ConfigEntry.ConfigSource> importedConfigSources = Sets.newHashSet(
-            ConfigEntry.ConfigSource.DYNAMIC_TOPIC_CONFIG
-    );
+    public static Set<ConfigEntry.ConfigSource> importedConfigSources = new HashSet<ConfigEntry.ConfigSource>() {{
+        add(ConfigEntry.ConfigSource.DYNAMIC_TOPIC_CONFIG);
+    }};
 
     public ImportManager(KafkaService kafkaService) {
         this.kafkaService = kafkaService;
