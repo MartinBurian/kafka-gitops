@@ -7,15 +7,17 @@ import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.config.ConfigResource;
+import org.inferred.freebuilder.shaded.com.google.common.collect.Sets;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ImportManager {
     private final KafkaService kafkaService;
+
+    public static Set<ConfigEntry.ConfigSource> importedConfigSources = Sets.newHashSet(
+            ConfigEntry.ConfigSource.DYNAMIC_TOPIC_CONFIG
+    );
 
     public ImportManager(KafkaService kafkaService) {
         this.kafkaService = kafkaService;
@@ -33,7 +35,7 @@ public class ImportManager {
                     .setPartitions(description.partitions().size())
                     .setReplication(description.partitions().get(0).replicas().size())
                     .putAllConfigs(topicConfigs.get(name).stream()
-                            .filter((entry) -> !entry.isDefault())
+                            .filter((entry) -> importedConfigSources.contains(entry.source()))
                             .collect(Collectors.toMap(ConfigEntry::name, ConfigEntry::value)))
                     .build());
         });
